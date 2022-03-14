@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://unpkg.com/react@17/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      // PostItem.js
+      function PostItem({ callback, title, description, publishedAt }) {
+        if (typeof callback === "function") callback(Math.random());
+        return (
+          <div className="post-item">
+            <h2 className="post-title">{title}</h2>
+            <p className="post-decs">{description}</p>
+            <p className="post-published">{publishedAt}</p>
+          </div>
+        );
+      }
+
+      // App.js
+      function App() {
+        return (
+          <div id="wrapper">
+            <PostItem
+              title="title 1"
+              description="description 1"
+              publishedAt="published 1"
+              data={[{ a: 1 }, { b: 2 }]}
+              callback={(random) => {
+                console.log("random: ", random);
+              }}
+            />
+            <PostItem
+              title="title 2"
+              description="description 2"
+              publishedAt="published 2"
+            />
+            <PostItem
+              title="title 3"
+              description="description 3"
+              publishedAt="published 3"
+            />
+          </div>
+        );
+      }
+
+      // index.js
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
