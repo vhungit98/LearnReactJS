@@ -1,6 +1,7 @@
 import { useState } from "react";
+import Content from "./Content";
 
-// ********** useState **********
+// ********** useState hook **********
 function AppUseState1() {
   const orders = [100, 200, 300];
   // const total = orders.reduce((total, cur) => total + cur); // Tính toán lại sau mỗi lần re-render
@@ -210,5 +211,26 @@ function AppTwoWayBinding3() {
   );
 }
 //
-
-export default AppUseState4;
+// ********** Mounted - Unmounted binding **********
+function AppMountedUnmounted1() {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ padding: 30 }}>
+      <button onClick={() => setShow(!show)}>Toggle</button>
+      {show && <Content />}
+    </div>
+  );
+}
+//
+// ********** useEffect hook **********
+function AppUseEffect1() {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ padding: 30 }}>
+      <button onClick={() => setShow(!show)}>Toggle</button>
+      {show && <Content />}
+    </div>
+  );
+}
+//
+export default AppMountedUnmounted1;
