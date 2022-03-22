@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 // 1. useEffect(callback)
 // - Gọi callback mỗi khi component re-reder
@@ -10,9 +10,10 @@ import { useEffect, useState } from "react";
 ///////////////////////////////// Điểm chung:
 // 1. Callback luôn được gọi sau khi component mounted
 // 2. Cleanup function luôn được gọi trước khi component unmounted
+// 3. Cleanup function luôn được gọi trước khi callback được gọi lại (trừ lần mounted)
 
-const tabs = ["posts", "comments", "albums"];
-export default function Content() {
+function UseEffect1() {
+  const tabs = ["posts", "comments", "albums"];
   const [title, setTitle] = useState("");
   const [posts, setPosts] = useState([]);
   const [type, setType] = useState("posts");
@@ -118,6 +119,139 @@ export default function Content() {
           Go to top
         </button>
       )}
+    </div>
+  );
+}
+
+function UseEffect2() {
+  const [countDown, setCountDown] = useState(180);
+
+  useEffect(() => {
+    const timeId = setInterval(() => {
+      setCountDown((prevState) => prevState - 1);
+    }, 1000);
+    return () => clearInterval(timeId);
+  }, []);
+  // useEffect(() => {
+  //   const timeId = setTimeout(() => {
+  //     setCountDown(countDown - 1);
+  //   }, 1000);
+  //   return () => clearTimeout(timeId);
+  // }, [countDown]);
+
+  return (
+    <div>
+      <h1>{countDown}</h1>
+    </div>
+  );
+}
+
+function UseEffect3() {
+  const [avatar, setAvatar] = useState();
+
+  useEffect(() => {
+    return () => {
+      avatar && URL.revokeObjectURL(avatar.preview);
+    };
+  }, [avatar]);
+
+  const handlePreviewAvatar = (e) => {
+    const file = e.target.files[0];
+    file.preview = URL.createObjectURL(file);
+    setAvatar(file);
+
+    e.target.value = null; // Xử lý chọn nhiều lần trên cùng một ảnh
+    console.log(123);
+  };
+
+  return (
+    <div>
+      <input type="file" onChange={handlePreviewAvatar} />
+      {avatar && <img src={avatar.preview} alt="img" width="50%" />}
+    </div>
+  );
+}
+
+function UseEffect4() {
+  const lessons = [
+    {
+      id: 1,
+      name: "ReactJS là gì? Tại sao nên học ReactJS",
+    },
+    {
+      id: 2,
+      name: "SPA/MPA là gì?",
+    },
+    {
+      id: 3,
+      name: "Arrow function là gì?",
+    },
+  ];
+  const [lessonId, setLesonId] = useState(1);
+
+  useEffect(() => {
+    const handleComment = ({ detail }) => {
+      console.log(detail);
+    };
+    window.addEventListener(`lesson-${lessonId}`, handleComment);
+
+    return () => {
+      window.removeEventListener(`lesson-${lessonId}`, handleComment);
+    };
+  }, [lessonId]);
+
+  return (
+    <div>
+      <ul>
+        {lessons.map((lesson) => (
+          <li
+            key={lesson.id}
+            style={{
+              color: lessonId === lesson.id ? "red" : "#333",
+              cursor: "pointer",
+            }}
+            onClick={() => setLesonId(lesson.id)}
+          >
+            {lesson.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// useEffect:
+// 1: Cập nhật lại state
+// 2. Cập nhật lại DOM (mutated)
+// 3. Render lại UI
+// 4. Gọi cleanup nếu deps thay đổi
+// 5. Gọi useEffect callback
+
+// useLayoutEffect:
+// 1: Cập nhật lại state
+// 2. Cập nhật lại DOM (mutated)
+// 4. Gọi cleanup nếu deps thay đổi (sync)
+// 5. Gọi useLayoutEffect callback (sync)
+// 3. Render lại UI
+export default function UseLayoutEffect1() {
+  const [count, setCount] = useState(0);
+
+  // useEffect(() => {
+  //   if (count > 3) setCount(0);
+  // }, [count]);
+
+  useLayoutEffect(() => {
+    if (count > 3) setCount(0);
+  }, [count]);
+
+  const handleRun = () => {
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={handleRun}>Run</button>
     </div>
   );
 }

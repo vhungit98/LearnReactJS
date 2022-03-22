@@ -1,5 +1,14 @@
-import { useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Content from "./Content";
+import Reactmemo from "./Reactmemo";
+import ToDo from "./Todo";
 
 // ********** useState hook **********
 function AppUseState1() {
@@ -222,8 +231,8 @@ function AppMountedUnmounted1() {
   );
 }
 //
-// ********** useEffect hook **********
-function AppUseEffect1() {
+// ********** useEffect, useLayoutEffect hook **********
+function AppUseEffectuseLayOutEffect() {
   const [show, setShow] = useState(false);
   return (
     <div style={{ padding: 30 }}>
@@ -233,4 +242,185 @@ function AppUseEffect1() {
   );
 }
 //
-export default AppMountedUnmounted1;
+// ********** useRef hook **********
+// Lưu các giá trị qua một tham chiếu bên ngoài function component
+function AppUseRef1() {
+  const [count, setCount] = useState(60);
+  const timeId = useRef();
+  const prevCount = useRef();
+  const h1Ref = useRef();
+
+  useEffect(() => {
+    prevCount.current = count;
+  }, [count]);
+
+  useEffect(() => {
+    const rect = h1Ref.current.getBoundingClientRect();
+    console.log(rect);
+  });
+
+  const handleStart = () => {
+    timeId.current = setInterval(() => {
+      setCount((prevCount) => prevCount - 1);
+    }, 1000);
+    console.log("Start -> ", timeId.current);
+  };
+
+  const handleStop = () => {
+    clearInterval(timeId.current);
+    console.log("Stop -> ", timeId.current);
+  };
+
+  console.log(count, prevCount.current);
+
+  return (
+    <div style={{ padding: 30 }}>
+      <h1 ref={h1Ref}>{count}</h1>
+      <button onClick={handleStart}>Start</button>
+      <button onClick={handleStop}>Start</button>
+    </div>
+  );
+}
+//
+// ********** React.memo HOC, useCallback hook **********
+// memo() -> Higher Order Component (HOC)
+// Tránh component con re-reder khi không cần thiết (component cha bị re-render)
+// memo() nhận vào 1 component, sau đó check các props của component có bị thay đổi hay không, nếu có ít nhất 1 props bị thay đổi thì sẽ re-render
+// useCallback sử dụng cho callback, sau khi đã sử dụng React.memo
+function AppReactmemo1() {
+  const [count, setCount] = useState(0);
+  const [count2, setCount2] = useState(0);
+
+  const handleIncrease = useCallback(() => {
+    setCount((count) => count + 1);
+  }, []); // Nếu có deps và deps thay đổi thì useCallback sẽ callback vào một tham chiếu mới và return tham chiếu đó
+
+  const handleIncrease2 = () => {
+    setCount2((count2) => count2 + 1);
+  };
+
+  return (
+    <div style={{ padding: 30 }}>
+      <Reactmemo onIncrease={handleIncrease} count={count} />
+      <h1>{count}</h1>
+      <h1>{count2}</h1>
+      <button onClick={handleIncrease}>Click me re-render!</button>
+      <button onClick={handleIncrease2}>Click me not re-render 2!</button>
+    </div>
+  );
+}
+//
+// ********** useMemo hook **********
+function AppUseMemo1() {
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [products, setProducts] = useState([]);
+  const nameRef = useRef();
+
+  const handleSubmit = () => {
+    setProducts([
+      ...products,
+      {
+        name,
+        price: +price,
+      },
+    ]);
+    setName("");
+    setPrice("");
+    nameRef.current.focus();
+  };
+
+  const total = useMemo(() => {
+    const result = products.reduce((result, product) => {
+      console.log("Tính toán lại ...");
+
+      return result + product.price;
+    }, 0);
+    return result;
+  }, [products]);
+
+  console.log("re-render");
+
+  return (
+    <div style={{ padding: 30 }}>
+      <input
+        ref={nameRef}
+        value={name}
+        placeholder="Enter name..."
+        onChange={(e) => setName(e.target.value)}
+      />
+      <br />
+      <input
+        value={price}
+        placeholder="Enter price..."
+        onChange={(e) => setPrice(e.target.value)}
+      />
+      <br />
+      <button onClick={handleSubmit}>Add</button>
+      <br />
+      Total: {total}
+      <ul>
+        {products.map((product, index) => {
+          return (
+            <li key={index}>
+              {product.name} - {product.price}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+//
+// ********** useReducer hook **********
+// useState:
+// 1. Init state: 0
+// 2. Actions: Up (state + 1) / Down (state - 1)
+//----------
+// useReducer:
+// 1. Init state: 0
+// 2. Actions: Up (state + 1) / Down (state - 1)
+// 3. Create reducer
+// 4. Dispatch
+
+function AppUseReducer1() {
+  // Init state:
+  const initState = 0;
+
+  // Actions:
+  const UP_ACTION = "up";
+  const DOWN_ACTION = "up";
+
+  // Create reducer
+  const reducer = (state, action) => {
+    console.log("Reducer running ...");
+    switch (action) {
+      case UP_ACTION:
+        return state + 1;
+      case DOWN_ACTION:
+        return state - 1;
+      default:
+        throw new Error("Invalid action");
+    }
+  };
+  const [count, dispatch] = useReducer(reducer, initState);
+
+  return (
+    <div style={{ padding: 30 }}>
+      <h1>{count}</h1>
+      <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
+      <button onClick={() => dispatch(UP_ACTION)}>Up</button>
+    </div>
+  );
+}
+//
+function AppUseReducer2() {
+  return (
+    <div style={{ padding: 30 }}>
+      <ToDo />
+    </div>
+  );
+}
+//
+
+export default AppUseReducer2;
