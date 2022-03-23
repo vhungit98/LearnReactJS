@@ -1,14 +1,20 @@
 import {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   useState,
 } from "react";
+import "./App.css";
 import Content from "./Content";
+import Content2 from "./Content2";
 import Reactmemo from "./Reactmemo";
+import { ThemeContext } from "./ThemeContext";
 import ToDo from "./Todo";
+import { useStore, actions } from "./store";
+import Video from "./Video";
 
 // ********** useState hook **********
 function AppUseState1() {
@@ -422,5 +428,74 @@ function AppUseReducer2() {
   );
 }
 //
+// ********** useContext hook **********
+// Truyền dữ liệu từ component cha tới component con mà không cần thông qua bước trung gian
+// CompA => CompB => CompC
+// => CompA => CompC
+// 1. Create context
+// 2. Provider
+// 3. Consumer
+function AppUseContext1() {
+  const context = useContext(ThemeContext);
+  return (
+    <div style={{ padding: 30 }}>
+      <button onClick={context.toggleTheme}>Toggle theme</button>
+      <Content2 />
+    </div>
+  );
+}
+//
+function AppUseContext2() {
+  const [state, dispatch] = useStore();
+  const { todos, todoInput } = state;
 
-export default AppUseReducer2;
+  const handleAdd = () => {
+    dispatch(actions.addTodo(todoInput));
+  };
+
+  return (
+    <div style={{ padding: 30 }}>
+      <input
+        value={todoInput}
+        placeholder="Enter todo ..."
+        onChange={(e) => {
+          dispatch(actions.setTodoInout(e.target.value));
+        }}
+      />
+      <button onClick={handleAdd}>Add</button>
+      {todos.map((todo, index) => (
+        <li key={index}>{todo}</li>
+      ))}
+    </div>
+  );
+}
+//
+// ********** useImperativeHandle hook **********
+function AppUseImperativeHandle1() {
+  const videoRef = useRef();
+
+  useEffect(() => {
+    console.log(videoRef.current);
+  });
+
+  const handlePlay = () => {
+    videoRef.current.play();
+  };
+
+  const handlePause = () => {
+    videoRef.current.pause();
+  };
+
+  return (
+    <div style={{ padding: 30 }}>
+      <Video ref={videoRef} />
+      <div>
+        <button onClick={handlePlay}>Play</button>
+        <button onClick={handlePause}>Pause</button>
+      </div>
+    </div>
+  );
+}
+//
+
+export default AppUseImperativeHandle1;
