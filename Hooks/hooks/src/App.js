@@ -93,7 +93,7 @@ function AppUseState4() {
   const [job, setJob] = useState("");
   const [jobs, setJobs] = useState(() => {
     const storageJobs = JSON.parse(localStorage.getItem("jobs"));
-    return storageJobs;
+    return storageJobs ?? [];
   }); // ??: null or undefined thì bỏ qua
 
   const handleSubmit = () => {
@@ -131,6 +131,8 @@ function AppTwoWayBinding1() {
       email,
     });
   };
+
+  console.log("re-render");
 
   return (
     <div style={{ padding: 30 }}>
@@ -283,7 +285,7 @@ function AppUseRef1() {
     <div style={{ padding: 30 }}>
       <h1 ref={h1Ref}>{count}</h1>
       <button onClick={handleStart}>Start</button>
-      <button onClick={handleStop}>Start</button>
+      <button onClick={handleStop}>Stop</button>
     </div>
   );
 }
@@ -304,7 +306,7 @@ function AppReactmemo1() {
   const handleIncrease2 = () => {
     setCount2((count2) => count2 + 1);
   };
-
+  console.log("re-render component cha ...");
   return (
     <div style={{ padding: 30 }}>
       <Reactmemo onIncrease={handleIncrease} count={count} />
@@ -471,7 +473,7 @@ function AppUseContext2() {
 }
 //
 // ********** useImperativeHandle hook **********
-function AppUseImperativeHandle1() {
+export default function AppUseImperativeHandle1() {
   const videoRef = useRef();
 
   useEffect(() => {
@@ -497,5 +499,3 @@ function AppUseImperativeHandle1() {
   );
 }
 //
-
-export default AppUseImperativeHandle1;

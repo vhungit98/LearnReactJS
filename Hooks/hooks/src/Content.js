@@ -150,14 +150,16 @@ function UseEffect3() {
   const [avatar, setAvatar] = useState();
 
   useEffect(() => {
+    // Delete img after unmounted
     return () => {
       avatar && URL.revokeObjectURL(avatar.preview);
     };
   }, [avatar]);
 
   const handlePreviewAvatar = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Lấy ra file từ list file của input
     file.preview = URL.createObjectURL(file);
+    console.log(file);
     setAvatar(file);
 
     e.target.value = null; // Xử lý chọn nhiều lần trên cùng một ảnh
@@ -241,7 +243,11 @@ export default function UseLayoutEffect1() {
   // }, [count]);
 
   useLayoutEffect(() => {
+    console.log('Callback ...');
     if (count > 3) setCount(0);
+    return () => {
+      console.log('Cleanup ...');
+    };
   }, [count]);
 
   const handleRun = () => {

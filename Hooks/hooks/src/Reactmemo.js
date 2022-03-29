@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 function Reactmemo({ count, onIncrease }) {
-  console.log("re-render");
+  console.log("re-render component con ...");
 
   return (
     <>
