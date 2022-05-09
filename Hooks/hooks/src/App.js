@@ -437,7 +437,7 @@ function AppUseReducer2() {
 // 1. Create context
 // 2. Provider
 // 3. Consumer
-function AppUseContext1() {
+export default function AppUseContext1() {
   const context = useContext(ThemeContext);
   return (
     <div style={{ padding: 30 }}>
@@ -473,7 +473,7 @@ function AppUseContext2() {
 }
 //
 // ********** useImperativeHandle hook **********
-export default function AppUseImperativeHandle1() {
+function AppUseImperativeHandle1() {
   const videoRef = useRef();
 
   useEffect(() => {
